@@ -1,6 +1,6 @@
 ![Lego Blocks](https://forum.door43.org/uploads/default/original/1X/0a2172623a094033c0f609fe36bb08eacdd4fb1b.jpeg)
 
-# Example React Component Library
+# translationManager POC React Component Library
 
 Read more about why we are focusing on creating component libraries and our approach:
 https://forum.door43.org/t/component-libraries/396

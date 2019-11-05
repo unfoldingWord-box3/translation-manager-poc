@@ -12,12 +12,10 @@ let sections = [
     content: 'README.md',
   },
   {
-    name: 'Greetings',
+    name: 'Trees',
     components: () => {
       const componentNames = [
-        'hello-name',
-        'hello-names-ul',
-        'hello-names-list',
+        'tree-item-row',
       ];
       return componentNames.map(componentName => {
         const filename = upperFirst(camelCase(componentName));

@@ -1,15 +1,16 @@
 {
-  "name": "hello-world-react-component-library",
+  "name": "translation-manager-react-component-library",
   "version": "0.0.6",
   "license": "MIT",
-  "description": "A Collection of Components for Telling the World Hello.",
-  "homepage": "https://unfoldingword-box3.github.io/hello-world-react-component-library/",
+  "description": "A Collection of Components for displaying translation project status.",
+  "homepage": "https://unfoldingword-box3.github.io/translation-manager-react-component-library/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/unfoldingWord-box3/hello-world-react-component-library"
+    "url": "https://github.com/unfoldingWord-box3/translation-manager-react-component-library"
   },
   "private": false,
   "dependencies": {
+    "@material-ui/lab": "^4.0.0-alpha.30",
     "prop-types": "^15.7.2"
   },
   "scripts": {
@@ -29,8 +30,8 @@
     "not op_mini all"
   ],
   "peerDependencies": {
-    "@material-ui/core": "^3.9.3",
-    "@material-ui/icons": "^3.0.2",
+    "@material-ui/core": "^4.X.X",
+    "@material-ui/icons": "^4.X.X",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   },
@@ -39,8 +40,8 @@
     "@babel/core": "^7.4.3",
     "@babel/preset-env": "^7.4.3",
     "@babel/preset-react": "^7.0.0",
-    "@material-ui/core": "^3.9.3",
-    "@material-ui/icons": "^3.0.2",
+    "@material-ui/core": "^4.0.0",
+    "@material-ui/icons": "^4.0.0",
     "gh-pages": "^2.0.1",
     "lodash": "^4.17.11",
     "react": "^16.8.6",
