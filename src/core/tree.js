@@ -1,43 +1,53 @@
-// TBD make an RCL
-// TBD convert to mui-datatable
 // TBD normalize data
 // Make Data structure
 // extract from repos
 
 // react
-import React from 'react';
-//mport { lighten, makeStyles, withStyles } from '@material-ui/core/styles';
-import { makeStyles } from '@material-ui/core/styles';
+  import React from 'react';
+
 //material ui
-import Container from '@material-ui/core/Container';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+  import { makeStyles } from '@material-ui/core/styles';
+  import Container from '@material-ui/core/Container';
+  import Typography from '@material-ui/core/Typography';
+  import Box from '@material-ui/core/Box';
+
+// Select  
+  import Select from '@material-ui/core/Select';
+  import MenuItem from '@material-ui/core/MenuItem';
 
 // treeview
-import TreeView from '@material-ui/lab/TreeView';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import TreeItem from '@material-ui/lab/TreeItem';
+  import TreeView from '@material-ui/lab/TreeView';
+  import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+  import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+  import TreeItem from '@material-ui/lab/TreeItem';
 
 import TreeItemRow from '../components/tree-item-row';
 
+// table
+  //import { Table, TableHead, TableCell } from '@material-ui/core';
+
+const widgitWidth = 25;
 const useStyles = makeStyles( theme => ({
-root: {
-  height: 216,
-  flexGrow: 1,
-  minWidth: 1000,
-},
-textField: {
-  marginLeft: theme.spacing(1),
-  marginRight: theme.spacing(1),
-  width: 200,
-},
+  root: {
+    height: '50px',
+    flexGrow: 1,
+    minWidth: 1000,
+  },
+  textField: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: 200,
+  },
 }));
 
 
-
-export default function TreeAll() {
+export function TreeAll() {
   const classes = useStyles();
+  const [interval, setInterval] = React.useState('');
+
+  const handleChange = event => {
+    setInterval(event.target.value);
+  };
 
 return (
   <Container maxWidth="xl">
@@ -46,8 +56,18 @@ return (
         unfoldingWord Project Manager POC
       </Typography>
       <Typography  gutterBottom>
-        Interval: Monthly
-      </Typography>
+        Interval: 
+      <Select
+        labelId="demo-simple-select-label"
+        id="demo-simple-select"
+        value={interval}
+        onChange={handleChange}
+      >
+        <MenuItem value={90}>Quarterly</MenuItem>
+        <MenuItem value={30}>Monthly</MenuItem>
+        <MenuItem value={7}>Weekly</MenuItem>
+        <MenuItem value={1}>Daily</MenuItem>
+      </Select>  </Typography>
     </Box>
 
     <TreeView
@@ -56,108 +76,123 @@ return (
       defaultExpandIcon={<ChevronRightIcon />}
     >
       <TreeItem nodeId="1" label="Projects">
+        <TreeItemRow   
+          width={widgitWidth} 
+          interval={interval}          
+          progress="20%" scheduledDate="2017-05-24" completedDate=""
+          start="0"   scheduled="800"
+          started="0" yet="0" comp="30" early="0" project="770" behind="0" late="0"   
+          notes="Just getting started"    
+        />
         <TreeItem nodeId="2" label="Sponsor: uW">
           <TreeItem nodeId="3" label="Language: en">
             <TreeItem nodeId="4" label="Type: gl">
               <TreeItem nodeId="5" label="Translation: ULT">
                 <TreeItem nodeId="6" label="Testament: OT">
                   <TreeItem nodeId="7" label="Check: All">
-                    <TreeItemRow                 
+                    <TreeItemRow   
+                      width={widgitWidth}      
+                      interval={interval}          
                       progress="20%" scheduledDate="2017-05-24" completedDate=""
                       start="0"   scheduled="800"
                       started="0" yet="0" comp="30" early="0" project="770" behind="0" late="0"   
                       notes="Just getting started"    
                     />
-                  </TreeItem>  
+                  </TreeItem>
+
                   <TreeItem nodeId="11" label="Book: gen"> 
                     <TreeItem  nodeId="12"  label="Check: Text Complete" >
-                      <TreeItemRow progress="20%" scheduledDate="2017-05-24" completedDate=""
+                      <TreeItemRow    
+                      width={widgitWidth}      
+                        interval={interval}      
+                        progress="20%" scheduledDate="2017-05-24" completedDate=""
                         start="0"   scheduled="200"
                         started="0" yet="30" comp="70" early="0" project="100" behind="30" late="0"   
                         notes="time shifted"    
                       />
-                    </TreeItem>
-
-{ /*                
+                    </TreeItem>                
                     <TreeItem  nodeId="14" label="Check: Internal Review" >
-                    <TreeItemRow          
-                      progress="0%" scheduledDate="2017-05-24" completedDate=""
-                      start="30"   scheduled="300"
-                      started="30" yet="0" comp="150" early="0" project="100" behind="0" late="0"  
-                      notes="Projected to be under budget" 
-                    >
-                    </TreeItemRow>
+                      <TreeItemRow    
+                      width={widgitWidth}       
+                        interval={interval}               
+                        progress="0%" scheduledDate="2017-05-24" completedDate=""
+                        start="30"   scheduled="300"
+                        started="30" yet="0" comp="150" early="0" project="100" behind="0" late="0"  
+                        notes="Projected to be under budget" 
+                      />
+                    </TreeItem>
                   </TreeItem>
-
+                  
                   <TreeItem nodeId="15" label="Book: rut">
-
-                    <TreeItemRow                   
-                      nodeId="17" 
-                      label="Check: Text Complete"
-                      progress="10%" scheduledDate="2017-05-24" completedDate=""
-                      start="60"   scheduled="400"
-                      started="60" yet="70" comp="100" early="0" project="230" behind="70" late="0"  
-                      notes="Projected way over budget" 
-                    >
-                    </TreeItemRow>
-
-                    <TreeItemRow 
-                      nodeId="19" 
-                      label="Check: Internal Review"
-                      progress="30%" scheduledDate="2017-05-24" completedDate=""
-                      start="90"   scheduled="300"
-                      started="90" yet="0" comp="300" early="0" project="0" behind="0" late="50"  
-                      notes="Finisthed a little late" 
-                    >
-                    </TreeItemRow>
+                    <TreeItem nodeId="17" label="Check: Text Complete" >
+                      <TreeItemRow       
+                      width={widgitWidth}
+                        interval={interval}       
+                        progress="10%" scheduledDate="2017-05-24" completedDate=""
+                        start="60"   scheduled="400"
+                        started="60" yet="70" comp="100" early="0" project="230" behind="70" late="0"  
+                        notes="Projected way over budget" 
+                      />
+                    </TreeItem>
+                    <TreeItem nodeId="19" label="Check: Internal Review" >
+                      <TreeItemRow      
+                      width={widgitWidth}      
+                        interval={interval}      
+                        progress="30%" scheduledDate="2017-05-24" completedDate=""
+                        start="90"   scheduled="300"
+                        started="90" yet="0" comp="300" early="0" project="0" behind="0" late="50"  
+                        notes="Finisthed a little late" 
+                      />
+                    </TreeItem>
                   </TreeItem>
-
+                  
                   <TreeItem nodeId="21" label="Book: jon">
-
-                    <TreeItemRow 
-                      nodeId="22" 
-                      label="Check: Text Complete"
-                      progress="0%" scheduledDate="2017-05-24" completedDate=""
-                      start="110"   scheduled="300"
-                      started="110" yet="0" comp="300" early="0" project="0" behind="0" late="0" 
-                      notes="Finished on time"  
-                    >
-                    </TreeItemRow>
-
-                    <TreeItemRow 
-                      nodeId="24" 
-                      label="Check: Internal Review"
-                      progress="0%" scheduledDate="2017-05-24" completedDate=""
-                      start="140"   scheduled="300"
-                      started="140" yet="0" comp="250" early="50" project="0" behind="0" late="0" 
-                      notes="Under budget"  
-                    >
-                    </TreeItemRow>
+                    <TreeItem nodeId="22" label="Check: Text Complete" >
+                      <TreeItemRow   
+                      width={widgitWidth}  
+                        interval={interval}      
+                        progress="0%" scheduledDate="2017-05-24" completedDate=""
+                        start="110"   scheduled="300"
+                        started="110" yet="0" comp="300" early="0" project="0" behind="0" late="0" 
+                        notes="Finished on time"  
+                      />
+                    </TreeItem>
+                    <TreeItem nodeId="24" label="Check: Internal Review" >
+                      <TreeItemRow    
+                      width={widgitWidth}      
+                        interval={interval}      
+                        progress="0%" scheduledDate="2017-05-24" completedDate=""
+                        start="140"   scheduled="300"
+                        started="140" yet="0" comp="250" early="50" project="0" behind="0" late="0" 
+                        notes="Under budget"  
+                      />
+                    </TreeItem>
                   </TreeItem>
                 </TreeItem>
 
                 <TreeItem nodeId="21" label="Testament: NT">
                   <TreeItem nodeId="22" label="Book: mat">
-                 
-                    <TreeItemRow 
-                      nodeId="26" 
-                      label="Check: Text Complete"
-                      progress="0%" scheduledDate="2017-05-24" completedDate=""
-                      start="170"   scheduled="300"
-                      started="170" yet="70" comp="0" early="0" project="0" behind="0" late="0"  
-                      notes="Have not started and late" 
-                    >
-                    </TreeItemRow>
-
-                    <TreeItemRow 
-                      nodeId="28" 
-                      label="Check: Internal Review"
-                      progress="0%" scheduledDate="2017-05-24" completedDate=""
-                      start="200"   scheduled="300"
-                      started="200" yet="0" comp="0" early="0" project="0" behind="0" late="0"
-                      notes="Scheduled"   
-                    >
-                    </TreeItemRow>
+  
+                    <TreeItem nodeId="26" label="Check: Text Complete" >
+                      <TreeItemRow    
+                      width={widgitWidth}     
+                        interval={interval}      
+                        progress="0%" scheduledDate="2017-05-24" completedDate=""
+                        start="170"   scheduled="300"
+                        started="170" yet="70" comp="0" early="0" project="0" behind="0" late="0"  
+                        notes="Have not started and late" 
+                      />
+                    </TreeItem>
+                    <TreeItem nodeId="28" label="Check: Internal Review" ></TreeItem>
+                      <TreeItemRow       
+                      width={widgitWidth}     
+                        interval={interval}      
+                        progress="0%" scheduledDate="2017-05-24" completedDate=""
+                        start="200"   scheduled="300"
+                        started="200" yet="0" comp="0" early="0" project="0" behind="0" late="0"
+                        notes="Scheduled"   
+                      />
+                    </TreeItem>
 
                     <TreeItem nodeId="30" label="Check: Text Complete" />
                     <TreeItem nodeId="31" label="Progress: 30%" />
@@ -177,6 +212,7 @@ return (
                     <TreeItem nodeId="43" label="Progress: 10%" />
                   </TreeItem>
                 </TreeItem>
+
                 <TreeItem nodeId="44" label="Resource: OBS">
                   <TreeItem nodeId="45" label="Story: 1">
                     <TreeItem nodeId="46" label="Check: Text Complete" />
@@ -196,6 +232,7 @@ return (
                     <TreeItem nodeId="63" label="Check: Internal Review" />
                     <TreeItem nodeId="6" label="Progress: 10%" />
                   </TreeItem>
+
                   <TreeItem nodeId="70" label="OBS: uTN">
                     <TreeItem nodeId="71" label="Check: Text Complete" />
                     <TreeItem nodeId="72" label="Progress: 50%" />
@@ -215,6 +252,7 @@ return (
                     <TreeItem nodeId="94" label="Progress: 2%" />
                   </TreeItem>
                 </TreeItem>
+
                 <TreeItem nodeId="100" label="Document: uTN">
                   <TreeItem nodeId="101" label="Check: Text Complete" />
                   <TreeItem nodeId="102" label="Progress: 30%" />
@@ -245,7 +283,8 @@ return (
                   <TreeItem nodeId="143" label="Check: Internal Review" />
                   <TreeItem nodeId="144" label="Progress: 0%" />
                 </TreeItem>  
-              </TreeItem>  
+              </TreeItem>
+
               <TreeItem nodeId="150" label="Translation: UST">
                 <TreeItem nodeId="151" label="Testament: OT">
                   <TreeItem nodeId="152" label="Book: gen">
@@ -368,10 +407,9 @@ return (
                 <TreeItem nodeId="331" label="Check: Internal Review" />
                 <TreeItem nodeId="331" label="Progress: 0%" />
               </TreeItem> 
-            </TreeItem> */ }
-            </TreeItem>   </TreeItem>   </TreeItem>   </TreeItem> </TreeItem>  
-          </TreeItem> 
-        </TreeItem> 
+            </TreeItem>
+        </TreeItem>   
+      </TreeItem> 
       <TreeItem nodeId="340" label="Documents">
         <TreeItem nodeId="341" label="Material-UI">
           <TreeItem nodeId="342" label="src">

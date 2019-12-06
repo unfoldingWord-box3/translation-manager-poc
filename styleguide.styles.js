@@ -54,7 +54,7 @@ const theme = {
     h6: 16
   },
   maxWidth: 1500,
-  sidebarWidth: 200
+  sidebarWidth: 250
 }
 
 const styles = {

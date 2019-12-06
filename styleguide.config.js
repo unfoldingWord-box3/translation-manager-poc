@@ -16,6 +16,8 @@ let sections = [
     components: () => {
       const componentNames = [
         'tree-item-row',
+        'schedule-box',
+        'date-hdr'
       ];
       return componentNames.map(componentName => {
         const filename = upperFirst(camelCase(componentName));
