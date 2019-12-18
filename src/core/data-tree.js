@@ -9,9 +9,9 @@
 // TBD Support cancel search
 // TBD Support resource assignement and display
 // TBD Make proj scale to comp by now
-// TBD finish deriving scheduleBox parms from DCS
-// TBD extract schedule from DCS
-// BUG ViewDate is off by 1 day
+// + finish deriving scheduleBox parms from DCS
+// + extract schedule from DCS
+// TBD BUG ViewDate is off by 1 day
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import MaterialTable from 'material-table';
@@ -25,7 +25,8 @@ import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 import { differenceInCalendarDays } from 'date-fns';
 import DateHdr from '../components/date-hdr';
-
+import axios from 'axios';
+//import { NoMeetingRoom } from '@material-ui/icons';
 //const dte = new Date( Date.now() );
 //const startDate = dte.getFullYear() + '-' + ( dte.getMonth() + 1 ) + '-' + dte.getDate();
 //const viewDate = startDate;
@@ -39,17 +40,299 @@ import DateHdr from '../components/date-hdr';
 
 //const ScheduleContext = React.createContext({ scheduleScope });
 
-function getDCSReleases() {
+/**
+ * @param {pathname} path - linux path into repo
+ *
+function basename( path ) {
+  return path.replace(/.*\//, '');
+}
+*/
 
+/**
+ * @param {string} endpoint - path into dcs after version
+ * @param {string} filter   - optional query string for search0
+ */
+async function getDCS( endpoint, filter ) {
+  var options = {
+    url: 'https://git.door43.org/api/v1/' + endpoint,
+    auth: {
+      username: '',
+      timeout:  10000,
+      password: 'YnJ1Y2Uuc3BpZGVsQGdtYWlsLmNvbTpibXNzbWJfMQ=='
+    }
+  }
+
+  if( filter ) {
+    // add query string if provided
+    options.params = {};
+    options.params.q = filter;
+  }  
+
+console.log( "getDCS: request: " + JSON.stringify( options ) );
+
+  const myInterceptor = axios.interceptors.response.use( function( response ) {
+    return response;
+  }, function( error ) {
+    return Promise.reject( error );
+  } );
+
+  var response = await axios( options )
+    .catch( function( error ) {
+        if( error.response  ) {           // error != 2XX
+          console.log( "getDCS: data: ", error.response.data );
+          console.log( "getDCS: status: ", error.response.status );
+          console.log( "getDCS: headers: ", error.response.headers );
+        } else if( error.request ) {      // no response
+          console.log( "getDCS: error.request: ", error.request );
+          response = { status: '404' };
+        } else {                          // request setup failed
+          console.log( "getDCS: error.message: ", error.message );
+        }
+
+        console.log( "getDCS: config: ", JSON.stringify( error.config ) );
+      } )
+  
+  // `curl -X GET "https://bg.door43.org/api/v1/repos/search?q=_rel" -H "accept: application/json" -H "authorization: Basic YnJ1Y2Uuc3BpZGVsQGdtYWlsLmNvbTpibXNzbWJfMQ=="`;
+console.log( "getDCS: response.code: ", JSON.stringify( response.status ) );
+  axios.interceptors.response.eject( myInterceptor );
+  return response;
 }
 
 
-function getScheduleData() {
-  const dcsReleases = getDCSReleases();
+function getJustIssues( issues ) {
+  var justIssues = [];
 
-  for( var relIdx = 0; relIdx < dcsReleases.length; relIdx++ ) {
-
+  for( var idx = 0; idx < issues.length; idx++ ) {
+    justIssues.push( objectPick (issues[ idx ], [ 'number', 'title', 'description', 'created_at', 'due_date' ] ) );
   }
+
+  return justIssues;
+}
+
+
+function objectPick( obj, attrs ) {
+//console.log ( "issuePick: " + JSON.stringify( obj ) );
+  var filtered = {};
+
+  for( var attr in obj ) {
+//console.log( attr + " " + obj[ attr ] );
+    if( attrs.indexOf( attr ) >= 0 ) {
+        filtered[ attr ] = obj[ attr ];
+    }
+  }
+
+  return filtered;
+}
+
+
+function dataRollup( root ) {
+  var rolledUp = {};
+  return rolledUp;
+}
+
+
+/**
+ * @param {string} languageCode - 2 or 3 digit code for language
+ * @param {string} release      - semantic 3 part version
+ * 
+ * extract this info from DCS and roll up to top
+ * 
+ * /projects/sponsor/language/type/translation/document/chapter/check/possible
+ *                           |           |             /complete        
+ *                           |           /check/possible
+ *                           |                 /Complete  
+ *                           /check/possible
+ *                           |     /complete
+ *                           /_rel/issues/effort_estimate
+ *                                |      /start_date
+ *                                |      /Complete
+ *                                /milestones/due_date 
+ *                                           /issue_count
+ *                                           /issues_complete
+ */
+async function getScheduleData( languageCode, release ) {
+//console.log( "getScheduleData: args: languageCode: " + languageCode + ", rel: " + release );
+  const projects = {
+    sponsors: [ {
+      sponsor: 'uW',
+      languages: [ {
+        languageCode: 'en',
+        owner: 'lrsallee',
+        version: '1.2.1',
+        start_date: '2019-10-10',
+        due_date: '2019-10-10',
+        milestones: [ {
+          tasks: []
+        } ],
+        checks: [ {
+          check: 'textComplete',
+          possible: 'r',
+          complete: 'q'
+        },{
+          check: 'alignment',
+          possible: 'r',
+          complete: 'q'
+        },{
+          check: 'selection',
+          possible: 'r',
+          complete: 'p'
+        } ],
+        category: {
+          scope: 'gl',
+          translations: [ {
+            translation: 'ult',
+            milestones: [ {
+              tasks: []
+            } ],
+            checks: [ {
+              check: 'textComplete',
+              possible: 'r',
+              complete: 'q'
+            },{
+              check: 'alignment',
+              possible: 'r',
+              complete: 'q'
+            },{
+              check: 'selection',
+              possible: 'r',
+              complete: 'p'
+            } ],
+            collections: [ {
+              collection: 'ot', /*tN|tW|tQ|tA|sQ|sN|whitepaper|apocrapha|epigrapha|pseudapigrapha' */ 
+              books: [ {
+                book:'rut',
+                chapters: 'n',
+                verses: 'm',
+                milestones: [ {
+                  tasks: []
+                }],
+                checks: [{
+                  check: 'alignment',
+                  possible: 'r',
+                  complete: 'q'
+                },{
+                  check: 'selection',
+                  possible: 'r',
+                  complete: 'p'
+                }],
+              } ]
+            },{
+              collection: 'nt',
+              books: [ {
+                book: 'mat',
+                chapters: '...'
+              } ] 
+            },{
+              collection: 'obs',
+              stories: [ {
+                number: 1,
+                sentences: 'r',
+                checks: [{
+                  check: 'selection',
+                  possible: 'r',
+                  complete: 'q'
+                } ]
+              }, {
+                number: 2,
+                sentences: 's'
+              } ]
+            } ]  
+          },{
+            translation: 'ust'
+          },{
+            translation: 'unt'
+          } ]
+        } 
+      } ] 
+    }, {
+      sponsor: 'bcs',
+      languages: []
+    } ]
+  };
+
+  const booksOfBible = [ 
+    'mat', 'mrk', 'luk', 'jhn', 'act', 'rom', '1co', '2co', 'gal', 'eph', 'php', 'col', '1th', '2th', '1ti', '2ti', 'tit', 'phm', 'heb', 'jas', '1pe', '2pe', '1jn', '2jn', '3jn', 'jud', 'rev', 
+    'nt', 'gen', 'exo', 'lev', 'num', 'deu', 'jos', 'jdg', 'rut', '1sa', '2sa', '1ki', '2ki', '1ch', '2ch', 'ezr', 'neh', 'est', 'job', 'psa', 'pro', 'ecc', 'sng', 'isa', 'jer', 'lam', 'ezk', 'dan', 'hos', 'jol amo', 'oba', 'jon', 'mic', 'nam', 'hab', 'zep', 'hag', 'zec', 'mal' ];
+  
+  var repo = [ languageCode, release, 'rel' ].join( '_' );
+  //const current = projects.sponsors[0].languages;
+//console.log( "getScheduleData: current project: " + JSON.stringify( current ) );
+
+  // look for milestones and issues
+  var dcsRawIssues = await getDCS( 'repos/bspidel/' + repo + '/issues' );
+  var justIssues = getJustIssues( dcsRawIssues.data );
+  
+//console.log( "getScheduleData: repo: " + repo + " justIssues: " + JSON.stringify( justIssues ) );   
+
+  //projects.sponsors[].languages[].milestones
+  const sponsorIdx = projects.sponsors.findIndex( x => x.sponsor ===  'uW' );
+//console.log( "getScheduleData: sponsorIdx: " + sponsorIdx );  
+  const sponsorRef = projects.sponsors[ sponsorIdx ];
+//console.log( "getScheduleData: sponsorRef: " + JSON.stringify( sponsorRef ) );
+
+  var languageIdx = sponsorRef.languages.findIndex( x => x.languageCode === languageCode );
+
+  if( languageIdx < 0 ) {
+    languageIdx = sponsorRef.languages.push( { languageCode: languageCode, version: release, owner: "bspidel" } ) - 1;
+  }
+  const languageRef = sponsorRef.languages[ languageIdx ];
+  
+
+  // place in hierachy for release
+  languageRef.milestones = justIssues;
+console.log( "getScheduleData: projects: " + JSON.stringify( projects ) );
+  var collect = "nt";
+
+  for( const translate of [ 'ult', 'ust', 'unt' ] ) {
+    for( const book of booksOfBible ) {
+      if( book === "ot" ) {
+        collect = "ot";
+        continue;
+      }
+    
+      repo = [ languageCode, translate, book, 'book' ].join( '_' );
+      dcsRawIssues = await getDCS( 'repos/bspidel/' + repo + '/issues' );
+      justIssues = getJustIssues( dcsRawIssues.data );  
+
+      if( justIssues.length > 0 ) {
+console.log(  "getScheduleData: translate: " + translate + ", collect: " + collect + " book: " + book );
+        //projects.sponsors[].languages[].category.translations[].collections[].books[].book.milestones
+        var translationIdx = myFindIndex( languageRef.category.translations, "translation", translate );
+
+        if( translationIdx < 0 ) {
+          translationIdx = languageRef.category.translations.push( { translation: translate } );
+        }
+
+        const translationRef = languageRef.category.translations[ translationIdx ];
+
+        var collectionIdx = myFindIndex( translationRef.collections, "collection", collect );
+
+        if( collectionIdx < 0 ) {
+          collectionIdx = translationRef.collections.push( { collection: collect } );
+        }
+
+console.log(  "getScheduleData: collectionIdx: " + collectionIdx );
+        const collectionRef = translationRef.collections[ collectionIdx ];
+
+        var bookIdx = myFindIndex( collectionRef.books, "book", book );
+
+        if( bookIdx < 0 ) {
+          bookIdx = collectionRef.books.push( { book: book });
+        }
+
+        const bookRef = collectionRef.books[ bookIdx ];
+
+        bookRef.milestones = justIssues;  
+      }
+    }
+  } 
+
+  console.log( "Full Project: " + JSON.stringify( projects ) );  
+}
+
+
+function myFindIndex( obj, attr, val ) {
+  return obj.findIndex( x => x[ attr ] === val )
 }
 
 
@@ -67,13 +350,14 @@ const useStyles = makeStyles( theme => (
   }    
 ));
 
-export function DataTree() {
+
+export function DataTree( language, release ) {
   const widgitWidth = 25;
   const classes = useStyles();
 
   const dte = new Date();
   const defaultStartDate = dte.getFullYear() + '-' + ( dte.getMonth() + 1 ) + '-' + dte.getDate();
-//console.log( "DataTree: defaultStartDate: " + defaultStartDate );
+console.log( "DataTree: defaultStartDate: " + defaultStartDate );
   const [ interval, setInterval ]   = React.useState( 1 );
   const [ dolly, setDolly ]         = React.useState( 0 );
   const [ startDate, setStartDate ] = React.useState( defaultStartDate );
@@ -98,7 +382,7 @@ export function DataTree() {
    *   View date determines when we start showing schedule information
    *   The viewer has a viewport that lets us look at a time portion of the schedule
    * 
-   * An interval sets the units of display. Units are one of days, week, month and quarter 
+   * An interval sets the units of display. Units are one of: days, weeks, months or quarters 
    * 
    * A "View From" slider lets us navigate the duration of the schedule through the viewport 
    * 
@@ -130,10 +414,8 @@ export function DataTree() {
    *   - late    = completed - ?
    */
 
-function getSchedule() {
-
-}
-
+  const scheduleData = getScheduleData( language, release );
+  const datum = dataRollup( scheduleData );
 //console.log( "Should be 9 days: " + differenceInCalendarDays( new Date( 2019, 10, 10 ), new Date( 2019, 10, 1 )) );
   //var rawData = {[]};
 
@@ -227,6 +509,7 @@ function getSchedule() {
           ]} 
           parentChildData = { ( row, rows ) => rows.find( a => a.id === row.parentId ) }
           title='Translation Manager - Accounting POC'
+          datum={datum}
           data={[
             { id: '1', parentId: '0',             
               task: 'Projects', progress: '20%',  scheduled: '2019-09-01', completed: '', 

@@ -37,8 +37,9 @@ const value = TreeAll();
 
 ```js
 import {DataTree} from './data-tree.js';
-
-const value = DataTree();
+var language = 'en';
+var release  = '1.2.1';
+const value = DataTree( language, release );
 
 <>{value}</>
 ```
