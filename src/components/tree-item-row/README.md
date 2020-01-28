@@ -1,9 +1,6 @@
-
 This is an atomic component that shows a single row from schedule.
-
 ### Example: Project started late but projected to complete early
 #### Note 'Interval' scales the values by 1, 7, 30, or 90 days
-
 ```js
 <TreeItemRow 
   width='25'
@@ -23,9 +20,7 @@ This is an atomic component that shows a single row from schedule.
   notes='Started late but projected to complete early'
 />  
 ```
-
 ### Example: Project started ontime and projected to complete ontime
-
 ```js
 <TreeItemRow 
   width='25'
@@ -45,9 +40,7 @@ This is an atomic component that shows a single row from schedule.
   notes='Started ontime and projected to complete ontime'
 />
 ```
-
 ### Example: Project scheduled later started ontime and projected to complete ontime
-
 ```js
 <TreeItemRow 
   width='25'
@@ -67,9 +60,7 @@ This is an atomic component that shows a single row from schedule.
   notes='Started ontime and projected to complete ontime'
 />
 ```
-
 ### Example: Project scheduled later started early and projected to complete late
-
 ```js
 <TreeItemRow 
   width='25'
@@ -89,9 +80,7 @@ This is an atomic component that shows a single row from schedule.
   notes='Scheduled later started early and projected to complete late'
 />
 ```
-
 ### Example: Project scheduled later started early and projected to complete late
-
 ```js
 <TreeItemRow
   width='25'
@@ -111,9 +100,7 @@ This is an atomic component that shows a single row from schedule.
   notes='Scheduled later started early and projected to complete late'
 />
 ```
-
 ### Example: Project starting late, projected to end late and ending even later
-
 ```js
 <TreeItemRow 
   width='25'
@@ -133,9 +120,7 @@ This is an atomic component that shows a single row from schedule.
   notes='Starting late, projected to end late and ending even later'
 />
 ```
-
 ### Example: Project starting ontime, completed a little late
-
 ```js
 <TreeItemRow 
   width='25'
@@ -155,9 +140,7 @@ This is an atomic component that shows a single row from schedule.
   notes='Project starting ontime, completed a little late'
 />
 ```
-
 ### Example: Unlikely project showing all possible parts
-
 ```js
 <TreeItemRow 
   width='25'

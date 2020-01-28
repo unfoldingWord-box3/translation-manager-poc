@@ -19,7 +19,21 @@ Actual could have 9 parts 8 at a time
 * Viewport is 1/4 of visualizable schedule
 * A vertical bar indicates current date
 * Scheduled before startdate are shifted to startdate
-
+### Realizable scenerios
+* Started project 
+  * early or
+  * on time or 
+  * late then
+* completed 
+  * nothing so far or  
+  * everything early or
+  * on time or
+  * some on time then
+* projected to complete 
+  * early or
+  * on time or
+  * some on time and or
+  * some late                                                                                 
 ```js
 <ScheduleBox 
   width='30'

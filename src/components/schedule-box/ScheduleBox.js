@@ -36,8 +36,6 @@ const useStyles = makeStyles( theme => ({
  * @param {days} late     - Completed after scheduled date
  *
  */ 
-
-
 export default function ScheduleBox( props ) {
   const { width, interval, dolly, current, start, duration, started, yet, comp, project, early, behind, late } = props;
   const classes = useStyles();

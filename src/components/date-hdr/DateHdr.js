@@ -74,7 +74,7 @@ console.log( "LayoutDates: month: " + i + " monthSize: " + monthSize + " thisDay
       firstLoop = 2;
     } 
     
-    if( i%12 === 0 ) { 
+    if( i !== 0 && i%12 === 0 ) { 
       thisYear++;
     }
 

@@ -14,7 +14,7 @@
   import ScheduleBox from '../schedule-box';
   
   
-  //height: 216,
+  /* height: 216, */
   const useStyles = makeStyles( theme => ({
     root: {
       height: 20,

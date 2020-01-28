@@ -26,317 +26,9 @@ import InputLabel from '@material-ui/core/InputLabel';
 import { differenceInCalendarDays } from 'date-fns';
 import DateHdr from '../components/date-hdr';
 import axios from 'axios';
-//import { NoMeetingRoom } from '@material-ui/icons';
-//const dte = new Date( Date.now() );
-//const startDate = dte.getFullYear() + '-' + ( dte.getMonth() + 1 ) + '-' + dte.getDate();
-//const viewDate = startDate;
-//
-//const scheduleScope = {
-//  interval: '1',
-//  dolly: '0',
-//  startDate,
-//  viewDate
-//}
-
-//const ScheduleContext = React.createContext({ scheduleScope });
-
-/**
- * @param {pathname} path - linux path into repo
- *
-function basename( path ) {
-  return path.replace(/.*\//, '');
-}
-*/
-
-/**
- * @param {string} endpoint - path into dcs after version
- * @param {string} filter   - optional query string for search0
- */
-async function getDCS( endpoint, filter ) {
-  var options = {
-    url: 'https://git.door43.org/api/v1/' + endpoint,
-    auth: {
-      username: '',
-      timeout:  10000,
-      password: 'YnJ1Y2Uuc3BpZGVsQGdtYWlsLmNvbTpibXNzbWJfMQ=='
-    }
-  }
-
-  if( filter ) {
-    // add query string if provided
-    options.params = {};
-    options.params.q = filter;
-  }  
-
-console.log( "getDCS: request: " + JSON.stringify( options ) );
-
-  const myInterceptor = axios.interceptors.response.use( function( response ) {
-    return response;
-  }, function( error ) {
-    return Promise.reject( error );
-  } );
-
-  var response = await axios( options )
-    .catch( function( error ) {
-        if( error.response  ) {           // error != 2XX
-          console.log( "getDCS: data: ", error.response.data );
-          console.log( "getDCS: status: ", error.response.status );
-          console.log( "getDCS: headers: ", error.response.headers );
-        } else if( error.request ) {      // no response
-          console.log( "getDCS: error.request: ", error.request );
-          response = { status: '404' };
-        } else {                          // request setup failed
-          console.log( "getDCS: error.message: ", error.message );
-        }
-
-        console.log( "getDCS: config: ", JSON.stringify( error.config ) );
-      } )
-  
-  // `curl -X GET "https://bg.door43.org/api/v1/repos/search?q=_rel" -H "accept: application/json" -H "authorization: Basic YnJ1Y2Uuc3BpZGVsQGdtYWlsLmNvbTpibXNzbWJfMQ=="`;
-console.log( "getDCS: response.code: ", JSON.stringify( response.status ) );
-  axios.interceptors.response.eject( myInterceptor );
-  return response;
-}
 
 
-function getJustIssues( issues ) {
-  var justIssues = [];
-
-  for( var idx = 0; idx < issues.length; idx++ ) {
-    justIssues.push( objectPick (issues[ idx ], [ 'number', 'title', 'description', 'created_at', 'due_date' ] ) );
-  }
-
-  return justIssues;
-}
-
-
-function objectPick( obj, attrs ) {
-//console.log ( "issuePick: " + JSON.stringify( obj ) );
-  var filtered = {};
-
-  for( var attr in obj ) {
-//console.log( attr + " " + obj[ attr ] );
-    if( attrs.indexOf( attr ) >= 0 ) {
-        filtered[ attr ] = obj[ attr ];
-    }
-  }
-
-  return filtered;
-}
-
-
-function dataRollup( root ) {
-  var rolledUp = {};
-  return rolledUp;
-}
-
-
-/**
- * @param {string} languageCode - 2 or 3 digit code for language
- * @param {string} release      - semantic 3 part version
- * 
- * extract this info from DCS and roll up to top
- * 
- * /projects/sponsor/language/type/translation/document/chapter/check/possible
- *                           |           |             /complete        
- *                           |           /check/possible
- *                           |                 /Complete  
- *                           /check/possible
- *                           |     /complete
- *                           /_rel/issues/effort_estimate
- *                                |      /start_date
- *                                |      /Complete
- *                                /milestones/due_date 
- *                                           /issue_count
- *                                           /issues_complete
- */
-async function getScheduleData( languageCode, release ) {
-//console.log( "getScheduleData: args: languageCode: " + languageCode + ", rel: " + release );
-  const projects = {
-    sponsors: [ {
-      sponsor: 'uW',
-      languages: [ {
-        languageCode: 'en',
-        owner: 'lrsallee',
-        version: '1.2.1',
-        start_date: '2019-10-10',
-        due_date: '2019-10-10',
-        milestones: [ {
-          tasks: []
-        } ],
-        checks: [ {
-          check: 'textComplete',
-          possible: 'r',
-          complete: 'q'
-        },{
-          check: 'alignment',
-          possible: 'r',
-          complete: 'q'
-        },{
-          check: 'selection',
-          possible: 'r',
-          complete: 'p'
-        } ],
-        category: {
-          scope: 'gl',
-          translations: [ {
-            translation: 'ult',
-            milestones: [ {
-              tasks: []
-            } ],
-            checks: [ {
-              check: 'textComplete',
-              possible: 'r',
-              complete: 'q'
-            },{
-              check: 'alignment',
-              possible: 'r',
-              complete: 'q'
-            },{
-              check: 'selection',
-              possible: 'r',
-              complete: 'p'
-            } ],
-            collections: [ {
-              collection: 'ot', /*tN|tW|tQ|tA|sQ|sN|whitepaper|apocrapha|epigrapha|pseudapigrapha' */ 
-              books: [ {
-                book:'rut',
-                chapters: 'n',
-                verses: 'm',
-                milestones: [ {
-                  tasks: []
-                }],
-                checks: [{
-                  check: 'alignment',
-                  possible: 'r',
-                  complete: 'q'
-                },{
-                  check: 'selection',
-                  possible: 'r',
-                  complete: 'p'
-                }],
-              } ]
-            },{
-              collection: 'nt',
-              books: [ {
-                book: 'mat',
-                chapters: '...'
-              } ] 
-            },{
-              collection: 'obs',
-              stories: [ {
-                number: 1,
-                sentences: 'r',
-                checks: [{
-                  check: 'selection',
-                  possible: 'r',
-                  complete: 'q'
-                } ]
-              }, {
-                number: 2,
-                sentences: 's'
-              } ]
-            } ]  
-          },{
-            translation: 'ust'
-          },{
-            translation: 'unt'
-          } ]
-        } 
-      } ] 
-    }, {
-      sponsor: 'bcs',
-      languages: []
-    } ]
-  };
-
-  const booksOfBible = [ 
-    'mat', 'mrk', 'luk', 'jhn', 'act', 'rom', '1co', '2co', 'gal', 'eph', 'php', 'col', '1th', '2th', '1ti', '2ti', 'tit', 'phm', 'heb', 'jas', '1pe', '2pe', '1jn', '2jn', '3jn', 'jud', 'rev', 
-    'nt', 'gen', 'exo', 'lev', 'num', 'deu', 'jos', 'jdg', 'rut', '1sa', '2sa', '1ki', '2ki', '1ch', '2ch', 'ezr', 'neh', 'est', 'job', 'psa', 'pro', 'ecc', 'sng', 'isa', 'jer', 'lam', 'ezk', 'dan', 'hos', 'jol amo', 'oba', 'jon', 'mic', 'nam', 'hab', 'zep', 'hag', 'zec', 'mal' ];
-  
-  var repo = [ languageCode, release, 'rel' ].join( '_' );
-  //const current = projects.sponsors[0].languages;
-//console.log( "getScheduleData: current project: " + JSON.stringify( current ) );
-
-  // look for milestones and issues
-  var dcsRawIssues = await getDCS( 'repos/bspidel/' + repo + '/issues' );
-  var justIssues = getJustIssues( dcsRawIssues.data );
-  
-//console.log( "getScheduleData: repo: " + repo + " justIssues: " + JSON.stringify( justIssues ) );   
-
-  //projects.sponsors[].languages[].milestones
-  const sponsorIdx = projects.sponsors.findIndex( x => x.sponsor ===  'uW' );
-//console.log( "getScheduleData: sponsorIdx: " + sponsorIdx );  
-  const sponsorRef = projects.sponsors[ sponsorIdx ];
-//console.log( "getScheduleData: sponsorRef: " + JSON.stringify( sponsorRef ) );
-
-  var languageIdx = sponsorRef.languages.findIndex( x => x.languageCode === languageCode );
-
-  if( languageIdx < 0 ) {
-    languageIdx = sponsorRef.languages.push( { languageCode: languageCode, version: release, owner: "bspidel" } ) - 1;
-  }
-  const languageRef = sponsorRef.languages[ languageIdx ];
-  
-
-  // place in hierachy for release
-  languageRef.milestones = justIssues;
-console.log( "getScheduleData: projects: " + JSON.stringify( projects ) );
-  var collect = "nt";
-
-  for( const translate of [ 'ult', 'ust', 'unt' ] ) {
-    for( const book of booksOfBible ) {
-      if( book === "ot" ) {
-        collect = "ot";
-        continue;
-      }
-    
-      repo = [ languageCode, translate, book, 'book' ].join( '_' );
-      dcsRawIssues = await getDCS( 'repos/bspidel/' + repo + '/issues' );
-      justIssues = getJustIssues( dcsRawIssues.data );  
-
-      if( justIssues.length > 0 ) {
-console.log(  "getScheduleData: translate: " + translate + ", collect: " + collect + " book: " + book );
-        //projects.sponsors[].languages[].category.translations[].collections[].books[].book.milestones
-        var translationIdx = myFindIndex( languageRef.category.translations, "translation", translate );
-
-        if( translationIdx < 0 ) {
-          translationIdx = languageRef.category.translations.push( { translation: translate } );
-        }
-
-        const translationRef = languageRef.category.translations[ translationIdx ];
-
-        var collectionIdx = myFindIndex( translationRef.collections, "collection", collect );
-
-        if( collectionIdx < 0 ) {
-          collectionIdx = translationRef.collections.push( { collection: collect } );
-        }
-
-console.log(  "getScheduleData: collectionIdx: " + collectionIdx );
-        const collectionRef = translationRef.collections[ collectionIdx ];
-
-        var bookIdx = myFindIndex( collectionRef.books, "book", book );
-
-        if( bookIdx < 0 ) {
-          bookIdx = collectionRef.books.push( { book: book });
-        }
-
-        const bookRef = collectionRef.books[ bookIdx ];
-
-        bookRef.milestones = justIssues;  
-      }
-    }
-  } 
-
-  console.log( "Full Project: " + JSON.stringify( projects ) );  
-}
-
-
-function myFindIndex( obj, attr, val ) {
-  return obj.findIndex( x => x[ attr ] === val )
-}
-
-
-const useStyles = makeStyles( theme => (
+const useStyles = makeStyles( theme => ( 
   {
     textField: {
       marginLeft: theme.spacing(1),
@@ -348,10 +40,10 @@ const useStyles = makeStyles( theme => (
       top: '0' 
     }
   }    
-));
+) );
 
 
-export function DataTree( language, release ) {
+export async function DataTree( language, release ) {
   const widgitWidth = 25;
   const classes = useStyles();
 
@@ -371,7 +63,7 @@ console.log( "DataTree: defaultStartDate: " + defaultStartDate );
   const handleViewDateChange  = event            => { setViewDate( event.target.value ); };
 //const handleCurrentChange   = ( event, value ) => { setCurrent( value );};
 
-
+console.log( "DataTree: got here 1" );
   /*
    * A Translation Project Schedule has a planned stert date 
    *   The scheduled date for a task is offset from that
@@ -413,12 +105,16 @@ console.log( "DataTree: defaultStartDate: " + defaultStartDate );
    *   - behind  = project - ?
    *   - late    = completed - ?
    */
-
-  const scheduleData = getScheduleData( language, release );
-  const datum = dataRollup( scheduleData );
+console.log( "DataTree: got here 1.1" );
+  var scheduleData = await getScheduleData( language, release );
+  //const datum = dataRollup( scheduleData );
+console.log( "DataTree: scheduleData: ", JSON.stringify( scheduleData ) );
+  //const datum = scheduleData;
+  const flattened = flatten( scheduleData );
+console.log( "DataTree: flattened: ", JSON.stringify( flattened ) );
 //console.log( "Should be 9 days: " + differenceInCalendarDays( new Date( 2019, 10, 10 ), new Date( 2019, 10, 1 )) );
   //var rawData = {[]};
-
+  console.log( "DataTree: got here 2" );
   //for( var sponsorIdx)
   return (
     <div style={{ maxWidth: '100%'}}>
@@ -506,10 +202,13 @@ console.log( "DataTree: defaultStartDate: " + defaultStartDate );
                 />
             },
             { title: 'Notes',     field: 'notes' }
-          ]} 
+          ]}
+          
           parentChildData = { ( row, rows ) => rows.find( a => a.id === row.parentId ) }
           title='Translation Manager - Accounting POC'
-          datum={datum}
+          /* data={flattened}  */
+        
+          
           data={[
             { id: '1', parentId: '0',             
               task: 'Projects', progress: '20%',  scheduled: '2019-09-01', completed: '', 
@@ -710,9 +409,505 @@ console.log( "DataTree: defaultStartDate: " + defaultStartDate );
                   duration: '3', yet: '0',  early: '5', behind: '0', late: '0'
             },
           ]}
+          
         />
         { /*</ScheduleContext.Consumer> */}
       </div>
     )
   }
+
+
+/**
+ * 
+ * @param {obj} project - hierarchical project of form:
+ *   projects.sponsors[uW|BCS].languages[en|swa].category.translations[ult|ust].collections[ot|nt].books[mat|mar|...].book.milestones
+ * 
+ *   map the milestones and tasks:
+ * 
+ * 
+ *   onto the ui
+ *   progress: '50%', scheduled: '2019-11-15', completed: '', notes: 'Finished in no time', duration: '3', yet: '0', early: '5', behind: '0', late: '0'
+ */
+
+function flatten( project ) {
+  var flattened = [];
+  var id = 1;
+
+//console.log( "flatten: project: ", JSON.stringify( project ) );
+
+  for( var sponsorItem of project.sponsors ) {
+//console.log( "flatten: sponsorItem: ", JSON.stringify( sponsorItem ) );
+    var sponsorId = id;
+    flattened.push( {  id: sponsorId, parentId: 0, task: "Sponsor: " + sponsorItem.sponsor } );
+    id++;
+
+    for( var languageItem of sponsorItem.languages ) {
+//console.log( "flatten: language: ", JSON.stringify( languageItem ) );
+      var languageId = id;
+      flattened.push( { id: languageId, parentId: sponsorId, task: sponsorItem.sponsor + " Language: " + languageItem.languageCode })   
+      id++;    
+
+      flattened.push( { id: languageId, parentId: languageId, task: sponsorItem.sponsor + 
+        "/" + languageItem.languageCode +
+        " Scope: " + languageItem.category.scope });
+
+      if( languageItem.category.translations ) {
+        for( var translationItem of languageItem.category.translations ) {
+//console.log( "flatten: translationItem: ", JSON.stringify( translationItem ) );
+          var translationId = id;
+          flattened.push( { id: translationId, parentId: languageId, task: sponsorItem.sponsor + 
+              "/" + languageItem.languageCode +
+              "/" + languageItem.category.scope +
+              " Translation: " + translationItem.translation })   
+          id++;    
+
+          if( translationItem.collections ) {
+            for( var collectionItem of translationItem.collections ) {
+//console.log( "flatten: collectionItem: ", JSON.stringify( collectionItem ) );
+              var collectionId = id;
+              flattened.push( { id: collectionId, parentId: translationId, task: sponsorItem.sponsor + 
+                  "/" + languageItem.languageCode +
+                  "/" + languageItem.category.scope +
+                  "/" + translationItem.translation +
+                  " Collection: " + collectionItem.collection })   
+              id++;    
+
+              if( collectionItem.books ) {
+                for( var bookItem of collectionItem.books ) {
+//console.log( "flatten: collectionItem: ", JSON.stringify( collectionItem ) );
+                  var bookId = id;
+                  flattened.push( { id: bookId, parentId: collectionId, task: sponsorItem.sponsor + 
+                      "/" + languageItem.languageCode +
+                      "/" + languageItem.category.scope +
+                      "/" + translationItem.translation +
+                      "/" + collectionItem.collection +
+                      " Book: " + bookItem.book })   
+                  id++;    
+
+                  if( bookItem.milestones ) {
+                    for( var milestoneItem of bookItem.milestones ) {
+//console.log( "flatten: collectionItem: ", JSON.stringify( collectionItem ) );
+                      var milestoneId = id;
+                      flattened.push( { id: milestoneId, parentId: bookId, task: sponsorItem.sponsor + 
+                          "/" + languageItem.languageCode +
+                          "/" + languageItem.category.scope +
+                          "/" + translationItem.translation +
+                          "/" + collectionItem.collection +
+                          "/" + bookItem.book +
+                          " Milestone: " + milestoneItem.title})   
+                      id++;    
+                    }
+                  }    
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  console.log( "flatten: flattened: ", JSON.stringify( flattened ) );
+  return flattened;
+}
+
+
+//import { NoMeetingRoom } from '@material-ui/icons';
+//const dte = new Date( Date.now() );
+//const startDate = dte.getFullYear() + '-' + ( dte.getMonth() + 1 ) + '-' + dte.getDate();
+//const viewDate = startDate;
+//
+//const scheduleScope = {
+//  interval: '1',
+//  dolly: '0',
+//  startDate,
+//  viewDate
+//}
+
+//const ScheduleContext = React.createContext({ scheduleScope });
+
+/**
+ * @param {pathname} path - linux path into repo
+ *
+function basename( path ) {
+  return path.replace(/.*\//, '');
+}
+*/
+
+/**
+ * @param {string} endpoint - path into dcs after version: v1/
+ * @param {string} filter   - optional query string for search0
+ */
+async function getDCS( endpoint, filter ) {
+  var options = {
+    url: 'https://git.door43.org/api/v1/' + endpoint,
+    auth: {
+      username: '',
+      timeout:  10000,
+      password: 'YnJ1Y2Uuc3BpZGVsQGdtYWlsLmNvbTpibXNzbWJfMQ=='
+    }
+  }
+
+  if( filter ) {
+    // add query string if provided
+    options.params = {};
+    options.params.q = filter;
+  }  
+
+
+//console.log( "getDCS: request: " + JSON.stringify( options ) );
+
+  const response = axios( options )
+    .catch( function( error ) {
+      return { status: 400 };
+    } )
+  
+  //equivalent to: `curl -X GET "https://bg.door43.org/api/v1/repos/search?q=_rel" -H "accept: application/json" -H "authorization: Basic YnJ1Y2Uuc3BpZGVsQGdtYWlsLmNvbTpibXNzbWJfMQ=="`;
+//console.log( "getDCS: endpoint: " + endpoint + " response.code: ", JSON.stringify( response.status ) );
+  return response;
+}
+
+
+function getJustIssues( issues ) {
+  var justIssues = [];
+
+  for( var idx = 0; idx < issues.length; idx++ ) {
+    justIssues.push( objectPick (issues[ idx ], [ 'number', 'title', 'description', 'created_at', 'due_date' ] ) );
+  }
+
+  return justIssues;
+}
+
+
+function objectPick( obj, attrs ) {
+//console.log ( "issuePick: " + JSON.stringify( obj ) );
+  var filtered = {};
+
+  for( var attr in obj ) {
+//console.log( attr + " " + obj[ attr ] );
+    if( attrs.indexOf( attr ) >= 0 ) {
+        filtered[ attr ] = obj[ attr ];
+    }
+  }
+
+  return filtered;
+}
+
+/*
+function dataRollup( root ) {
+  var rolledUp = {};
+  return rolledUp;
+}
+*/
+
+/**
+ * @param {string} languageCode - 2 or 3 digit code for language
+ * @param {string} release      - semantic 3 part version
+ * 
+ * extract this info from DCS and roll up to top
+ * 
+ * /projects/sponsor/language/type/translation/document/chapter/check/possible
+ *                           |           |             /complete        
+ *                           |           /check/possible
+ *                           |                 /Complete  
+ *                           /check/possible
+ *                           |     /complete
+ *                           /_rel/issues/effort_estimate
+ *                                |      /start_date
+ *                                |      /Complete
+ *                                /milestones/due_date 
+ *                                           /issue_count
+ *                                           /issues_complete
+ */
+
+async function getScheduleData( languageCode, release ) {
+console.log( "getScheduleData: args: languageCode: " + languageCode + ", rel: " + release );
+  var projects = {
+    sponsors: [ {
+      sponsor: 'uW',
+      languages: [ {
+        languageCode: 'en',
+        owner: 'lrsallee',
+        version: '1.2.1',
+        start_date: '2019-10-10',
+        due_date: '2019-10-10',
+        milestones: [ {
+          tasks: []
+        } ],
+        checks: [ {
+          check: 'textComplete',
+          possible: 'r',
+          complete: 'q'
+        },{
+          check: 'alignment',
+          possible: 'r',
+          complete: 'q'
+        },{
+          check: 'selection',
+          possible: 'r',
+          complete: 'p'
+        } ],
+        category: {
+          scope: 'gl',
+          translations: [ {
+            translation: 'ult',
+            milestones: [ {
+              tasks: []
+            } ],
+            checks: [ {
+              check: 'textComplete',
+              possible: 'r',
+              complete: 'q'
+            },{
+              check: 'alignment',
+              possible: 'r',
+              complete: 'q'
+            },{
+              check: 'selection',
+              possible: 'r',
+              complete: 'p'
+            } ],
+            collections: [ {
+              collection: 'ot', /* tN|tW|tQ|tA|sQ|sN|whitepaper|apocrapha|epigrapha|pseudapigrapha' */ 
+              books: [ {
+                book:'rut',
+                chapters: 'n',
+                verses: 'm',
+                milestones: [ {
+                  tasks: []
+                }],
+                checks: [{
+                  check: 'alignment',
+                  possible: 'r',
+                  complete: 'q'
+                },{
+                  check: 'selection',
+                  possible: 'r',
+                  complete: 'p'
+                }],
+              } ]
+            }, {
+              collection: 'nt',
+              books: [ {
+                book: 'mat',
+                chapters: '...'
+              } ] 
+            } ]
+          }, { 
+            translation: 'obs',
+            stories: [ {
+              story: 1,
+              milestones: [ {
+                tasks: []
+              } ],
+
+            }]  
+          }, {
+            translation: 'ust'
+          }, {
+            translation: 'unt'
+          }, {
+            translation: 'ta',
+            articles: [ {
+              article: 'metaphor'
+            }]
+          } ]
+        } 
+      } ] 
+    }, {
+      sponsor: 'bcs',
+      languages: []
+    } ]
+  };
+
+  const booksOfBible = [ 
+    'mat', 'mrk', 'luk', 'jhn', 
+    'act', 
+    'rom', '1co', '2co', 'gal', 'eph', 'php', 'col', '1th', '2th', '1ti', '2ti', 'tit', 'phm', 'heb', 
+    'jas', 
+    '1pe', '2pe', 
+    '1jn', '2jn', '3jn', 
+    'jud', 
+    'rev', 
+    'ot', 
+      'gen', 'exo', 'lev', 'num', 'deu', 
+      'jos', 'jdg', 'rut', '1sa', '2sa', '1ki', '2ki', '1ch', '2ch', 'ezr', 'neh', 'est', 'job', 
+      'psa', 'pro', 'ecc', 'sng', 
+      'isa', 'jer', 'lam', 'ezk', 'dan', 
+      'hos', 'jol', 'amo', 'oba', 'jon', 'mic', 'nam', 'hab', 'zep', 'hag', 'zec', 'mal' 
+  ];
+  const docsOfProject = [
+    "ult",
+    "ust",
+    "unt",
+    "ta",
+    "tw",
+    "tn",
+    "whtppr",
+    "obs",
+    "obs-tn",
+    "obs-tq",
+    "obs-tw",
+    "tq",
+    "sq",
+    "sn",
+    "app-str"
+  ]
+
+  var repo = "";
+  repo = [ languageCode, release, 'rel' ].join( '_' );
+  var dcsRawIssues = await getDCS( 'repos/bspidel/' + repo + '/issues' );
+
+  if( dcsRawIssues.status < '300' ) {
+    var justIssues = getJustIssues( dcsRawIssues.data );
+  }
+  
+    //const current = projects.sponsors[0].languages;
+//console.log( "getScheduleData: current project: " + JSON.stringify( current ) );
+
+    // look for milestones and issues
+    dcsRawIssues = await getDCS( 'repos/bspidel/' + repo + '/issues' );
+
+    if( dcsRawIssues.status < '300' ) {
+      justIssues = getJustIssues( dcsRawIssues.data );
+    
+console.log( "getScheduleData: repo: " + repo + " justIssues: " + JSON.stringify( justIssues ) );   
+
+      //projects.sponsors[].languages[].milestones
+      const sponsorIdx = projects.sponsors.findIndex( x => x.sponsor ===  'uW' );
+//console.log( "getScheduleData: sponsorIdx: " + sponsorIdx );  
+      const sponsorRef = projects.sponsors[ sponsorIdx ];
+//console.log( "getScheduleData: sponsorRef: " + JSON.stringify( sponsorRef ) );
+
+      var languageIdx = sponsorRef.languages.findIndex( x => x.languageCode === languageCode );
+
+    if( languageIdx < 0 ) {
+      languageIdx = sponsorRef.languages.push( { 
+        languageCode: languageCode, 
+        version: release, 
+        owner: "bspidel", 
+        category: { 
+          translations: [] 
+        } 
+      } ) - 1;
+    }
+
+    const languageRef = sponsorRef.languages[ languageIdx ];
+  
+    // place in hierachy for release
+    languageRef.milestones = justIssues;
+
+    var collect = "";
+//console.log( "getScheduleData: Initial project: " + JSON.stringify( projects ) );
+
+    for( const translate of docsOfProject ) {
+      if( [ 'ust', 'ult', 'unt' ].indexOf( translate ) >= 0 ) {
+        collect = "nt";
+
+        for( const book of booksOfBible ) {
+          if( book === "ot" ) {
+            collect = "ot";
+            continue;
+          }
+        
+          repo = [ languageCode, translate, book, 'book' ].join( '_' );
+          dcsRawIssues = await getDCS( 'repos/bspidel/' + repo + '/issues' );
+
+          if( dcsRawIssues.status < '300' ) {
+            justIssues = getJustIssues( dcsRawIssues.data );  
+
+            if( justIssues.length > 0 ) {
+  //console.log(  "getScheduleData: translate: " + translate + ", collect: " + collect + ", book: " + book + ", issues: " + justIssues.length );
+              //projects.sponsors[].languages[].category.translations[].collections[].books[].book.milestones
+  //console.log(  "getScheduleData: languageRef: ",  JSON.stringify( languageRef ) );
+              var translateIdx = myFindIndex( languageRef.category.translations, "translation", translate );
+
+              if( translateIdx < 0 ) {
+                translateIdx = languageRef.category.translations.push( { translation: translate } ) - 1;
+              }
+
+              const translationRef = languageRef.category.translations[ translateIdx ];
+
+              if( ! translationRef.collections ) {
+                translationRef.collections = [];
+              }
+
+              let collectIdx = myFindIndex( translationRef.collections, "collection", collect );
+
+              if( collectIdx < 0 ) {
+                collectIdx = translationRef.collections.push( { collection: collect, books: [] } ) - 1;
+              }
+
+  //console.log(  "getScheduleData: collectionIdx: " + collectionIdx );
+              const collectionRef = translationRef.collections[ collectIdx ];
+
+              var bookIdx = myFindIndex( collectionRef.books, "book", book );
+  //console.log(  "getScheduleData: before bookIdx: ", bookIdx );
+
+              if( bookIdx < 0 ) {
+                bookIdx = collectionRef.books.push( { book: book, milestones: [] }) - 1;
+              }
+  //console.log(  "getScheduleData: collectionRef: ",  JSON.stringify( collectionRef ) );
+  //console.log(  "getScheduleData: after bookIdx: ", bookIdx );
+              const bookRef = collectionRef.books[ bookIdx ];
+  //console.log( "getScheduleData: Mid Project: ", JSON.stringify( projects ) );  
+
+              bookRef.milestones = justIssues;  
+            } else {
+              //console.log( "getScheduleData: No issues." );
+            }
+          } else {
+            //console.log( "getScheduleData: No repo." );
+          }
+        }
+      } else {
+        repo = [ languageCode, collect ].join( '_' );
+        dcsRawIssues = await getDCS( 'repos/bspidel/' + repo + '/issues' );
+
+        if( dcsRawIssues.status < '300' ) {
+          justIssues = getJustIssues( dcsRawIssues.data );
+        }  
+
+        if( justIssues.length > 0 ) {
+          //console.log(  "getScheduleData: translate: " + translate + ", collect: " + collect + ", book: " + book + ", issues: " + justIssues.length );
+                      //projects.sponsors[].languages[].category.translations[].collections[].books[].book.milestones
+          //console.log(  "getScheduleData: languageRef: ",  JSON.stringify( languageRef ) );
+          var translationIdx = myFindIndex( languageRef.category.translations, "translation", translate );
+
+          if( translationIdx < 0 ) {
+            translationIdx = languageRef.category.translations.push( { translation: translate } ) - 1;
+          }
+
+          const translationRef = languageRef.category.translations[ translationIdx ];
+
+          if( ! translationRef.collections ) {
+            translationRef.collections = [];
+          }
+
+          var collectionIdx = myFindIndex( translationRef.collections, "collection", collect );
+
+          if( collectionIdx < 0 ) {
+            collectionIdx = translationRef.collections.push( { collection: collect, books: [] } ) - 1;
+          }
+
+console.log(  "getScheduleData: collectionIdx: " + collectionIdx );
+          const collectionRef = translationRef.collections[ collectionIdx ];
+          collectionRef.milestones = justIssues;
+        }  
+      }
+    }
+  } 
+
+console.log( "getScheduleData: Full Project: ", JSON.stringify( projects ) );  
+  return projects;
+}
+
+
+function myFindIndex( obj, attr, val ) {
+console.log( "myFindIndex: ", attr, val );
+
+  return obj.findIndex( x => x[ attr ] === val )
+}
+
+
 
